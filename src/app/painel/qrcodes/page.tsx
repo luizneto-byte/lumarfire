@@ -18,15 +18,15 @@ export default async function QrCodes({ searchParams }: { searchParams: { local?
 
   const base = { local: locais.nome, cliente: clientes.nome, localId: locais.id };
   const [ex, mg] = await Promise.all([
-    db.select({ id: extintores.id, tipo: extintores.tipo, cap: extintores.capacidade, ...base }).from(extintores)
+    db.select({ id: extintores.id, tipo: extintores.tipo, cap: extintores.capacidade, serie: extintores.numeroSerie, ...base }).from(extintores)
       .innerJoin(locais, eq(extintores.localId, locais.id)).innerJoin(clientes, eq(locais.clienteId, clientes.id))
       .where(eq(extintores.empresaId, s.empresaId)).orderBy(asc(clientes.nome), asc(locais.nome)),
     db.select({ id: mangueiras.id, numero: mangueiras.numero, ...base }).from(mangueiras)
       .innerJoin(locais, eq(mangueiras.localId, locais.id)).innerJoin(clientes, eq(locais.clienteId, clientes.id))
       .where(eq(mangueiras.empresaId, s.empresaId)).orderBy(asc(clientes.nome), asc(locais.nome)),
   ]);
-  const todos: { tipo: Tipo; id: string; titulo: string; sub: string; cliente: string; local: string; localId: string }[] = [
-    ...ex.map((x) => ({ tipo: "extintor" as const, id: x.id, titulo: `EXTINTOR ${x.tipo}`, sub: x.cap, cliente: x.cliente, local: x.local, localId: x.localId })),
+  const todos: { tipo: Tipo; id: string; titulo: string; sub: string; cliente: string; local: string; localId: string; serie?: string | null }[] = [
+    ...ex.map((x) => ({ tipo: "extintor" as const, id: x.id, titulo: `EXTINTOR ${x.tipo}`, sub: x.cap, serie: x.serie, cliente: x.cliente, local: x.local, localId: x.localId })),
     ...mg.map((x) => ({ tipo: "mangueira" as const, id: x.id, titulo: "MANGUEIRA", sub: x.numero, cliente: x.cliente, local: x.local, localId: x.localId })),
   ].filter((x) => !filtro || x.localId === filtro);
   const lista = todos.slice(0, LIMITE);
@@ -58,6 +58,7 @@ export default async function QrCodes({ searchParams }: { searchParams: { local?
               <p className="text-[10px] font-bold uppercase tracking-wide text-fogo">Lumar Fire</p>
               <p className="mt-0.5 text-sm font-bold">{e.titulo}</p>
               <p className="font-semibold">{e.sub}</p>
+              {e.tipo === "extintor" && <p className="mt-1 break-words font-semibold">Nº de série: {e.serie || "Não informado"}</p>}
               <p className="mt-1 truncate">{e.local}</p>
               <p className="mt-1 font-mono text-[10px] text-grafite/70">{codigoCurto(e.id)}</p>
             </div>

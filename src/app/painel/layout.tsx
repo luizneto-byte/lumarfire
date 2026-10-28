@@ -7,7 +7,7 @@ import { sair } from "../actions";
 
 const menu: { nome: string; href?: string; admin?: boolean; staff?: boolean }[] = [
   { nome: "Dashboard", href: "/painel" }, { nome: "Extintores", href: "/painel/extintores" }, { nome: "Mangueiras", href: "/painel/mangueiras" }, { nome: "Inspeções", href: "/painel/inspecoes" },
-  { nome: "Plantas", href: "/painel/plantas" }, { nome: "QR Codes e etiquetas", href: "/painel/qrcodes", staff: true }, { nome: "Clientes e locais", href: "/painel/clientes" }, { nome: "Relatórios", href: "/painel/relatorios" },
+  { nome: "Manutenções", href: "/painel/manutencoes" }, { nome: "Plantas", href: "/painel/plantas" }, { nome: "QR Codes e etiquetas", href: "/painel/qrcodes", staff: true }, { nome: "Clientes e locais", href: "/painel/clientes" }, { nome: "Relatórios", href: "/painel/relatorios" },
   { nome: "Usuários e permissões", href: "/painel/usuarios", admin: true }, { nome: "Configurações", href: "/painel/configuracoes", admin: true }, { nome: "Minha conta", href: "/painel/conta" },
 ];
 const rotuloPerfil = { admin: "Administrador", inspetor: "Inspetor", cliente: "Cliente" };

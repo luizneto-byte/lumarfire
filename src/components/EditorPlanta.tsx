@@ -8,6 +8,7 @@ const letra = { extintor: "E", mangueira: "M" };
 
 export default function EditorPlanta({ localId, src, inicial, podeEditar, destaque }: { localId: string; src: string; inicial: Pino[]; podeEditar: boolean; destaque?: string }) {
   const [pinos, setPinos] = useState(inicial);
+  const [zoom, setZoom] = useState(1);
   const [sel, setSel] = useState<string | null>(null);
   const [erro, setErro] = useState("");
   const [, iniciar] = useTransition();
@@ -31,14 +32,23 @@ export default function EditorPlanta({ localId, src, inicial, podeEditar, destaq
     aplicar(escolhido, Math.round(x * 10) / 10, Math.round(y * 10) / 10);
     setSel(null);
   }
+  const mudarZoom = (novo: number) => setZoom(Math.min(5, Math.max(0.5, Math.round(novo * 10) / 10)));
   return (
     <div className="grid gap-4 xl:grid-cols-[1fr_20rem]">
       <div>
         {escolhido && <p role="status" className="mb-2 rounded bg-agua px-3 py-2 text-sm font-semibold text-white">Toque na planta para posicionar: {escolhido.rotulo} <button type="button" onClick={() => setSel(null)} className="ml-2 underline">cancelar</button></p>}
         {erro && <p role="alert" className="mb-2 rounded bg-fogo/10 px-3 py-2 text-sm text-fogo">{erro}</p>}
-        <div ref={img} onClick={clicarPlanta} className={`relative inline-block max-w-full overflow-hidden rounded bg-white ${escolhido ? "cursor-crosshair ring-2 ring-agua" : ""}`}>
+        <div className="mb-2 flex flex-wrap items-center gap-2 rounded bg-white p-2 text-sm">
+          <button type="button" onClick={() => mudarZoom(zoom - 0.25)} className="rounded bg-papel px-3 py-1 font-bold" aria-label="Diminuir zoom">−</button>
+          <span className="min-w-14 text-center font-semibold">{Math.round(zoom * 100)}%</span>
+          <button type="button" onClick={() => mudarZoom(zoom + 0.25)} className="rounded bg-papel px-3 py-1 font-bold" aria-label="Aumentar zoom">+</button>
+          <button type="button" onClick={() => mudarZoom(1)} className="rounded bg-papel px-3 py-1">Restaurar</button>
+          <span className="text-xs text-grafite/60">Arraste as barras para navegar · Ctrl + rolagem para ampliar</span>
+        </div>
+        <div className="max-h-[75vh] max-w-full overflow-auto rounded bg-white touch-pan-x touch-pan-y" onWheel={(e) => { if (e.ctrlKey) { e.preventDefault(); mudarZoom(zoom + (e.deltaY < 0 ? 0.25 : -0.25)); } }}>
+        <div ref={img} onClick={clicarPlanta} style={{width: `${zoom * 100}%`}} className={`relative min-w-0 ${escolhido ? "cursor-crosshair ring-2 ring-agua" : ""}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt="Planta do local" className="block max-h-[75vh] max-w-full select-none" draggable={false} />
+          <img src={src} alt="Planta do local" className="block h-auto w-full select-none" draggable={false} />
           {pinos.filter((p) => p.x !== null && p.y !== null).map((p) => (
             <Link key={p.id} href={`/painel/inspecionar/${p.tipo}/${p.id}`} onClick={(e) => e.stopPropagation()} title={p.rotulo} aria-label={p.rotulo}
               style={{ left: `${p.x}%`, top: `${p.y}%` }}
@@ -46,6 +56,7 @@ export default function EditorPlanta({ localId, src, inicial, podeEditar, destaq
               {letra[p.tipo]}
             </Link>
           ))}
+        </div>
         </div>
         <ul className="mt-3 flex flex-wrap gap-4 text-xs text-grafite/80" aria-label="Legenda">
           <li><span className="mr-1 inline-block h-3 w-3 rounded-full bg-agua align-middle" />Em dia</li>

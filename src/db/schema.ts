@@ -103,3 +103,20 @@ export const plantas = pgTable("plantas", {
   dados: text("dados").notNull(), // base64
   atualizadoEm: timestamp("atualizado_em").notNull().defaultNow(),
 });
+
+// Serviços vinculados a um equipamento, com histórico preservado.
+export const manutencoes = pgTable("manutencoes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  empresaId: uuid("empresa_id").notNull().references(() => empresas.id, { onDelete: "cascade" }),
+  extintorId: uuid("extintor_id").references(() => extintores.id, { onDelete: "cascade" }),
+  mangueiraId: uuid("mangueira_id").references(() => mangueiras.id, { onDelete: "cascade" }),
+  tipo: text("tipo").notNull(),
+  status: text("status").notNull().default("pendente"),
+  descricao: text("descricao"),
+  responsavel: text("responsavel"),
+  fornecedor: text("fornecedor"),
+  previsao: date("previsao", { mode: "string" }),
+  conclusao: date("conclusao", { mode: "string" }),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
+  atualizadoEm: timestamp("atualizado_em").notNull().defaultNow(),
+});

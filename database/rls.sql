@@ -11,7 +11,7 @@ LANGUAGE sql STABLE AS $$ SELECT NULLIF(current_setting('app.usuario_id', true),
 DO $$
 DECLARE t text;
 BEGIN
- FOREACH t IN ARRAY ARRAY['empresas','usuarios','clientes','locais','extintores','mangueiras','inspecoes','plantas'] LOOP
+ FOREACH t IN ARRAY ARRAY['empresas','usuarios','clientes','locais','extintores','mangueiras','inspecoes','plantas','manutencoes'] LOOP
   EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY',t);
   EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY',t);
   EXECUTE format('DROP POLICY IF EXISTS isolamento_empresa ON public.%I',t);
