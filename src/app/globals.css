@@ -1,0 +1,5 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+body { @apply bg-papel text-grafite antialiased; }
+:focus-visible { outline: 2px solid #1F6A8A; outline-offset: 2px; }
+.campo { @apply w-full rounded border border-grafite/25 bg-white px-3 py-2.5 text-sm; }
+.botao { @apply w-full rounded bg-fogo px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b81f25] disabled:opacity-60; }
