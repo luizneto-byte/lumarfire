@@ -83,6 +83,7 @@ export const mangueiras = pgTable("mangueiras", {
 
 // Inspeção aponta para um extintor OU uma mangueira
 export const inspecoes = pgTable("inspecoes", {
+  offlineId: uuid("offline_id").unique(), // chave de idempotência para sincronização móvel
   id: uuid("id").primaryKey().defaultRandom(),
   empresaId: uuid("empresa_id").notNull().references(() => empresas.id, { onDelete: "cascade" }),
   extintorId: uuid("extintor_id").references(() => extintores.id, { onDelete: "cascade" }),
