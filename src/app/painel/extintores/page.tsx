@@ -34,7 +34,7 @@ export default async function Extintores() {
                 <td className="px-4 py-3">{e.numeroSerie ?? "—"}</td><td className="px-4 py-3">{br(e.validadeCarga)}</td>
                 <td className="px-4 py-3"><span className={`rounded px-2 py-0.5 text-xs font-semibold ${corStatus[st]}`}>{rotuloStatus[st]}</span></td>
                 <td className="px-4 py-3"><div className="flex gap-4">{edita && <Link href={`/painel/manutencoes?equipamento=extintor:${e.id}`} className="font-semibold text-agua underline">Manutenção</Link>}{edita && <Link href={`/painel/inspecionar/extintor/${e.id}`} className="font-semibold text-agua underline">Inspecionar</Link>}{edita && <Link href={`/painel/extintores/${e.id}`} className="font-semibold text-agua underline">Editar</Link>}
-                  {s.perfil === "admin" && <BotaoExcluir id={e.id} acao={excluirExtintor} aviso="Excluir este extintor e o histórico de inspeções dele?" />}</div></td>
+                  {edita && <BotaoExcluir id={e.id} acao={excluirExtintor} aviso="Excluir este extintor e o histórico de inspeções dele?" />}</div></td>
               </tr>); })}
             {lista.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-grafite/70">Nenhum extintor cadastrado ainda.</td></tr>}
           </tbody>

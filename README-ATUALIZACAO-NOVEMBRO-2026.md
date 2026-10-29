@@ -9,3 +9,4 @@
 - QR Codes: passam a usar o domínio atual do site.
 - Login: removido "Criar conta"; /cadastro redireciona ao login e o cadastro fica bloqueado. Crie cada cliente manualmente.
 - App de inspeção (celular): botões Apagar (uma) e Apagar tudo na fila de envio.
+- Exclusão: administrador e inspetor podem apagar clientes, locais, extintores, mangueiras, plantas, inspeções e manutenções. Só o administrador apaga usuários (nunca a si mesmo). O perfil cliente não apaga nada.

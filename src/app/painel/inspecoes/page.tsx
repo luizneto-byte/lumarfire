@@ -49,7 +49,7 @@ export default async function Inspecoes() {
                 <td className="px-4 py-3">{(i.extintorId ? rotE.get(i.extintorId) : i.mangueiraId ? rotM.get(i.mangueiraId) : null) ?? "—"}</td>
                 <td className="px-4 py-3"><span className={`rounded px-2 py-0.5 text-xs font-semibold ${i.conforme ? "bg-agua text-white" : "bg-fogo text-white"}`}>{i.conforme ? "Conforme" : "Não conforme"}</span></td>
                 <td className="px-4 py-3">{i.observacao ?? "—"}</td><td className="px-4 py-3">{inspetor ?? "—"}</td>
-                <td className="px-4 py-3">{s.perfil === "admin" && <BotaoExcluir id={i.id} acao={excluirInspecao} aviso="Excluir este registro de inspeção?" />}</td>
+                <td className="px-4 py-3">{edita && <BotaoExcluir id={i.id} acao={excluirInspecao} aviso="Excluir este registro de inspeção?" />}</td>
               </tr>))}
             {hist.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-grafite/70">Nenhuma inspeção registrada ainda.</td></tr>}
           </tbody>

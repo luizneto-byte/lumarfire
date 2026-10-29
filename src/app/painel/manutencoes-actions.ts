@@ -31,8 +31,7 @@ export async function atualizarManutencao(f: FormData) {
   revalidatePath("/painel", "layout");
 }
 export async function excluirManutencao(f: FormData) {
-  const s = await lerSessao();
-  if (!s || s.perfil !== "admin") throw new Error("Sem permissão");
+  const s = await staff();
   const id = valor(f, "id");
   if (!/^[0-9a-f-]{36}$/i.test(id)) return;
   await db.delete(manutencoes).where(and(eq(manutencoes.id, id), eq(manutencoes.empresaId, s.empresaId)));

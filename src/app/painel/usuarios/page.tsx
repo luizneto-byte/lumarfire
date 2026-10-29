@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { usuarios } from "@/db/schema";
 import { lerSessao } from "@/lib/auth";
-import { alterarPerfil, criarUsuario, definirAtivo, redefinirSenha } from "../gestao-actions";
+import { alterarPerfil, criarUsuario, definirAtivo, excluirUsuario, redefinirSenha } from "../gestao-actions";
 import FormMsg from "@/components/FormMsg";
+import BotaoExcluir from "@/components/BotaoExcluir";
 
 export const dynamic = "force-dynamic";
 const rotulo = { admin: "Administrador", inspetor: "Inspetor", cliente: "Cliente" } as const;
@@ -18,7 +19,7 @@ export default async function Usuarios() {
       <h1 className="text-2xl font-bold">Usuários e permissões</h1>
       <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
         <p className="rounded bg-white p-3"><b>Administrador:</b> acesso total, inclusive usuários, configurações e exclusões.</p>
-        <p className="rounded bg-white p-3"><b>Inspetor:</b> cadastra e edita equipamentos, registra inspeções e imprime etiquetas.</p>
+        <p className="rounded bg-white p-3"><b>Inspetor:</b> cadastra, edita e exclui equipamentos, clientes, locais, plantas, inspeções e manutenções; imprime etiquetas.</p>
         <p className="rounded bg-white p-3"><b>Cliente:</b> só visualiza equipamentos, plantas e relatórios.</p>
       </div>
 
@@ -59,6 +60,7 @@ export default async function Usuarios() {
                   <FormMsg acao={definirAtivo} botao={u.ativo ? "Desativar" : "Reativar"} className="" classeBotao={u.ativo ? "py-2.5 text-sm font-semibold text-fogo underline" : "py-2.5 text-sm font-semibold text-agua underline"}>
                     <input type="hidden" name="id" value={u.id} /><input type="hidden" name="ativo" value={u.ativo ? "0" : "1"} />
                   </FormMsg>
+                  <BotaoExcluir id={u.id} acao={excluirUsuario} aviso={`Excluir o usuário ${u.nome}? Ele perde o acesso e as inspeções dele continuam, sem o nome do inspetor.`} />
                 </div>)}
             </div>);
         })}

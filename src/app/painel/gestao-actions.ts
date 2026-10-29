@@ -68,6 +68,13 @@ export async function redefinirSenha(_: Msg, f: FormData): Promise<Msg> {
   return { ok: "Senha redefinida." };
 }
 
+export async function excluirUsuario(f: FormData): Promise<void> {
+  const s = await admin(), u = await alvo(txt(f, "id"), s.empresaId);
+  if (!u || u.id === s.uid) return;
+  await db.delete(usuarios).where(and(eq(usuarios.id, u.id), eq(usuarios.empresaId, s.empresaId)));
+  revalidatePath("/painel/usuarios");
+}
+
 export async function salvarEmpresa(_: Msg, f: FormData): Promise<Msg> {
   const s = await admin(), nome = txt(f, "nome");
   if (!nome) return { erro: "Informe o nome da empresa." };

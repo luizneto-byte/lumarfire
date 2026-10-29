@@ -40,7 +40,7 @@ export default async function Clientes() {
           <div key={c.id} className="rounded bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-semibold">{c.nome}{c.cnpj && <span className="ml-2 text-sm font-normal text-grafite/60">{c.cnpj}</span>}</h2>
-              {admin && <BotaoExcluir id={c.id} acao={excluirCliente} aviso={`Excluir "${c.nome}" com todos os locais, extintores, mangueiras e inspeções dele?`} />}
+              {edita && <BotaoExcluir id={c.id} acao={excluirCliente} aviso={`Excluir "${c.nome}" com todos os locais, extintores, mangueiras e inspeções dele?`} />}
             </div>
             {edita && (
               <details className="mt-2 text-sm"><summary className="cursor-pointer font-semibold text-agua">Editar cliente</summary>
@@ -58,7 +58,7 @@ export default async function Clientes() {
                   <span className="font-medium">{l.nome}</span>
                   {edita && <details className="ml-auto"><summary className="cursor-pointer font-semibold text-agua">Renomear</summary>
                     <form action={editarLocal} className="mt-2 flex gap-2"><input type="hidden" name="id" value={l.id} /><input name="nome" required defaultValue={l.nome} className="campo !w-auto" /><button className="botao !w-auto">Salvar</button></form></details>}
-                  {admin && <BotaoExcluir id={l.id} acao={excluirLocal} aviso={`Excluir o local "${l.nome}" e seus equipamentos?`} />}
+                  {edita && <BotaoExcluir id={l.id} acao={excluirLocal} aviso={`Excluir o local "${l.nome}" e seus equipamentos?`} />}
                 </li>))}
               {!ls.some((l) => l.clienteId === c.id) && <li className="text-grafite/60">Sem locais ainda</li>}
             </ul>
