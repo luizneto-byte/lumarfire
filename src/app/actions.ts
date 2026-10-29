@@ -20,6 +20,8 @@ export async function entrar(_: Estado, f: FormData): Promise<Estado> {
 }
 
 export async function cadastrar(_: Estado, f: FormData): Promise<Estado> {
+  // Cadastro público desativado: as contas são criadas manualmente pelo administrador do sistema.
+  if (process.env.PERMITIR_CADASTRO !== "1") return { erro: "Cadastro desativado." };
   const empresa = txt(f, "empresa"), nome = txt(f, "nome"), email = txt(f, "email").toLowerCase(), senha = txt(f, "senha");
   if (!empresa || !nome || !email.includes("@")) return { erro: "Preencha empresa, nome e um e-mail válido." };
   if (senha.length < 8) return { erro: "A senha precisa ter pelo menos 8 caracteres." };

@@ -23,3 +23,8 @@ CREATE INDEX IF NOT EXISTS manutencoes_mangueira_idx ON public.manutencoes (mang
 -- ALTER TABLE public.manutencoes ENABLE ROW LEVEL SECURITY;
 -- CREATE POLICY isolamento_empresa ON public.manutencoes FOR ALL
 --   USING (empresa_id = app.empresa_atual()) WITH CHECK (empresa_id = app.empresa_atual());
+
+-- ATUALIZAÇÃO: data de início e custo da manutenção.
+-- Se a tabela já existia, execute estas duas linhas uma vez no Neon SQL Editor:
+ALTER TABLE public.manutencoes ADD COLUMN IF NOT EXISTS data_inicio date;
+ALTER TABLE public.manutencoes ADD COLUMN IF NOT EXISTS custo numeric(12,2);
