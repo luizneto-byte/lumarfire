@@ -1,4 +1,4 @@
-import { numeric, pgTable, pgEnum, uuid, text, boolean, timestamp, date, real, integer } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, text, boolean, timestamp, date, real, integer } from "drizzle-orm/pg-core";
 
 export const perfil = pgEnum("perfil", ["admin", "inspetor", "cliente"]);
 
@@ -116,8 +116,6 @@ export const manutencoes = pgTable("manutencoes", {
   descricao: text("descricao"),
   responsavel: text("responsavel"),
   fornecedor: text("fornecedor"),
-  dataInicio: date("data_inicio", { mode: "string" }),
-  custo: numeric("custo", { precision: 12, scale: 2 }),
   previsao: date("previsao", { mode: "string" }),
   conclusao: date("conclusao", { mode: "string" }),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),

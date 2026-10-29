@@ -54,7 +54,7 @@ export default async function PlantaDoLocal({ params, searchParams }: { params: 
             <input type="file" name="arquivo" accept="image/png,image/jpeg,image/webp" required className="campo mt-1" />
           </label>
           <button className="botao !w-auto">{pl ? "Trocar" : "Enviar"}</button>
-          {pl && s.perfil !== "cliente" && <BotaoExcluir id={l.id} acao={removerPlanta} aviso="Remover a planta e as marcações dos equipamentos neste local?" rotulo="Remover planta" />}
+          {pl && s.perfil === "admin" && <BotaoExcluir id={l.id} acao={removerPlanta} aviso="Remover a planta e as marcações dos equipamentos neste local?" rotulo="Remover planta" />}
         </form>
       )}
 

@@ -33,7 +33,7 @@ export async function editarCliente(f: FormData) {
   revalidatePath("/painel/clientes");
 }
 export async function excluirCliente(f: FormData) {
-  const s = await sessao();
+  const s = await sessao(true);
   await db.delete(clientes).where(and(eq(clientes.id, txt(f, "id")), eq(clientes.empresaId, s.empresaId)));
   revalidatePath("/painel", "layout");
 }
@@ -52,7 +52,7 @@ export async function editarLocal(f: FormData) {
   revalidatePath("/painel/clientes");
 }
 export async function excluirLocal(f: FormData) {
-  const s = await sessao();
+  const s = await sessao(true);
   await db.delete(locais).where(and(eq(locais.id, txt(f, "id")), eq(locais.empresaId, s.empresaId)));
   revalidatePath("/painel", "layout");
 }
@@ -80,7 +80,7 @@ export async function editarExtintor(f: FormData) {
   revalidatePath("/painel", "layout");
 }
 export async function excluirExtintor(f: FormData) {
-  const s = await sessao();
+  const s = await sessao(true);
   await db.delete(extintores).where(and(eq(extintores.id, txt(f, "id")), eq(extintores.empresaId, s.empresaId)));
   revalidatePath("/painel", "layout");
 }
@@ -104,7 +104,7 @@ export async function editarMangueira(f: FormData) {
   revalidatePath("/painel", "layout");
 }
 export async function excluirMangueira(f: FormData) {
-  const s = await sessao();
+  const s = await sessao(true);
   await db.delete(mangueiras).where(and(eq(mangueiras.id, txt(f, "id")), eq(mangueiras.empresaId, s.empresaId)));
   revalidatePath("/painel", "layout");
 }
@@ -128,7 +128,7 @@ export async function registrarInspecao(f: FormData) {
   revalidatePath("/painel", "layout");
 }
 export async function excluirInspecao(f: FormData) {
-  const s = await sessao();
+  const s = await sessao(true);
   await db.delete(inspecoes).where(and(eq(inspecoes.id, txt(f, "id")), eq(inspecoes.empresaId, s.empresaId)));
   revalidatePath("/painel", "layout");
 }
@@ -177,7 +177,7 @@ export async function enviarPlanta(f: FormData) {
   redirect(volta);
 }
 export async function removerPlanta(f: FormData) {
-  const s = await sessao(), localId = txt(f, "id");
+  const s = await sessao(true), localId = txt(f, "id");
   if (!(await localDaEmpresa(localId, s.empresaId))) return;
   await db.delete(plantas).where(and(eq(plantas.localId, localId), eq(plantas.empresaId, s.empresaId)));
   // sem planta, as marcações perdem sentido

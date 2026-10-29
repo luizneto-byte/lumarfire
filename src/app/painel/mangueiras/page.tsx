@@ -34,7 +34,7 @@ export default async function Mangueiras() {
                 <td className="px-4 py-3">{m.diametro} / {m.comprimento}</td><td className="px-4 py-3">{br(m.validadeTeste)}</td>
                 <td className="px-4 py-3"><span className={`rounded px-2 py-0.5 text-xs font-semibold ${corStatus[st]}`}>{rotuloStatus[st]}</span></td>
                 <td className="px-4 py-3"><div className="flex gap-4">{edita && <Link href={`/painel/manutencoes?equipamento=mangueira:${m.id}`} className="font-semibold text-agua underline">Manutenção</Link>}{edita && <Link href={`/painel/inspecionar/mangueira/${m.id}`} className="font-semibold text-agua underline">Inspecionar</Link>}{edita && <Link href={`/painel/mangueiras/${m.id}`} className="font-semibold text-agua underline">Editar</Link>}
-                  {edita && <BotaoExcluir id={m.id} acao={excluirMangueira} aviso="Excluir esta mangueira e o histórico de inspeções dela?" />}</div></td>
+                  {s.perfil === "admin" && <BotaoExcluir id={m.id} acao={excluirMangueira} aviso="Excluir esta mangueira e o histórico de inspeções dela?" />}</div></td>
               </tr>); })}
             {lista.length === 0 && <tr><td colSpan={7} className="px-4 py-8 text-grafite/70">Nenhuma mangueira cadastrada ainda.</td></tr>}
           </tbody>
