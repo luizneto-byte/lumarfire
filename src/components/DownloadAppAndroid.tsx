@@ -1,8 +1,9 @@
 import QRCode from "qrcode";
 
-const URL_APK = "https://lumarfire.vercel.app/downloads/lumar-fire-inspecoes.apk";
+import { baseUrl } from "@/lib/equip";
 
 export default async function DownloadAppAndroid() {
+  const URL_APK = `${baseUrl()}/downloads/lumar-fire-inspecoes.apk`;
   const imagemQr = await QRCode.toDataURL(URL_APK, { width: 192, margin: 1, errorCorrectionLevel: "M" });
 
   return (

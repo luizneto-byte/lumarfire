@@ -116,6 +116,8 @@ export const manutencoes = pgTable("manutencoes", {
   descricao: text("descricao"),
   responsavel: text("responsavel"),
   fornecedor: text("fornecedor"),
+  custoCentavos: integer("custo_centavos"),
+  substitutoId: uuid("substituto_id").references(() => extintores.id, { onDelete: "set null" }),
   previsao: date("previsao", { mode: "string" }),
   conclusao: date("conclusao", { mode: "string" }),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),

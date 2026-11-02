@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import QRCode from "qrcode";
 
 export type Tipo = "extintor" | "mangueira";
@@ -7,12 +6,10 @@ export const uuidOk = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9
 
 // endereço que vai dentro do QR Code: APP_URL, ou o da requisição
 export function baseUrl() {
-  const fixa = process.env.APP_URL?.trim().replace(/\/$/, "");
-  if (fixa) return fixa;
-  const h = headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  // URLs absolutas estáveis para que etiquetas não mudem com domínios de preview.
+  const fixa = (process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://lumarfire.vercel.app").trim().replace(/\/$/, "");
+  if (!/^https?:\/\/[^/]+$/i.test(fixa)) throw new Error("APP_URL deve ser a origem HTTPS do sistema, sem caminho.");
+  return fixa;
 }
 export const urlEquip = (tipo: Tipo, id: string) => `${baseUrl()}/painel/inspecionar/${tipo}/${id}`;
 export const qrSvg = (texto: string) => QRCode.toString(texto, { type: "svg", margin: 0, errorCorrectionLevel: "M" });
