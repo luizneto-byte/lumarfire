@@ -4,7 +4,7 @@
   "short_name": "LF Inspeção",
   "description": "Inspeção de extintores e mangueiras com uso offline e sincronização",
   "start_url": "/painel/mobile",
-  "scope": "/painel/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#b91c1c",
