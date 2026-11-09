@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.lumarfire.twa",
+      "sha256_cert_fingerprints": [
+        "01:B2:A2:97:EE:2A:6C:A4:3E:FF:24:F8:5F:45:08:07:CA:07:69:49:11:77:9C:09:2C:36:D8:25:EA:74:96:87"
+      ]
+    }
+  }
+]
