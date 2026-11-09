@@ -1,6 +1,6 @@
 /* Lumar Fire — cache dedicado ao módulo de inspeção móvel.
  * Não armazena APIs, credenciais ou respostas de login. */
-const VERSION = 'lumar-inspecao-v3-qr';
+const VERSION = 'lumar-inspecao-v4-qr-jsqr';
 const APP = '/painel/mobile';
 const STATIC = [
   '/lumar-fire-logo.png',
