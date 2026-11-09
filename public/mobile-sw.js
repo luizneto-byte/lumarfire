@@ -1,6 +1,6 @@
 /* Lumar Fire — cache dedicado ao módulo de inspeção móvel.
  * Não armazena APIs, credenciais ou respostas de login. */
-const VERSION = 'lumar-inspecao-v2';
+const VERSION = 'lumar-inspecao-v3-qr';
 const APP = '/painel/mobile';
 const STATIC = [
   '/lumar-fire-logo.png',
@@ -49,6 +49,23 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  // QR Codes já impressos: se a conexão falhar na rota original,
+  // abrir o módulo offline com o identificador do equipamento.
+  // O fallback usa exatamente a URL original, sem modificar etiquetas.
+  if (req.mode === 'navigate' && /^\/painel\/inspecionar\/(extintor|mangueira)\/[0-9a-f-]{36}\/?$/i.test(url.pathname)) {
+    event.respondWith((async () => {
+      try {
+        return await fetch(req);
+      } catch {
+        const saved = await caches.match(APP);
+        if (!saved) return Response.error();
+        const target = new URL(APP, self.location.origin);
+        target.searchParams.set('qr', url.pathname);
+        return Response.redirect(target.toString(), 302);
+      }
+    })());
+    return;
+  }
   if (req.mode === 'navigate' && url.pathname === APP) {
     event.respondWith((async () => {
       try {

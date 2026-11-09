@@ -36,6 +36,13 @@ export default function MobileInspecao() {
       categoria = partes[indice] as Equip["categoria"];
       codigo = decodeURIComponent(partes[indice + 1]);
     } catch { /* QR simples com ID, série ou número */ }
+    if (raw.startsWith("/painel/inspecionar/")) {
+      const partes = raw.split("/").filter(Boolean);
+      if ((partes[2] === "extintor" || partes[2] === "mangueira") && partes[3]) {
+        categoria = partes[2] as Equip["categoria"];
+        codigo = partes[3];
+      }
+    }
     const codigoNormalizado = codigo.toLowerCase();
     const encontrados = [...catalogo.extintores, ...catalogo.mangueiras].filter(e =>
       (!categoria || e.categoria === categoria) &&
@@ -52,6 +59,19 @@ export default function MobileInspecao() {
     setMensagem(`${encontrado.categoria === "extintor" ? "Extintor" : "Mangueira"} selecionado(a) pelo QR Code. Confira os dados e registre a inspeção.`);
     document.getElementById("equipamento-inspecao")?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [catalogo]);
+
+  // Quando o Service Worker redireciona um QR antigo para cá offline,
+  // selecionamos o equipamento diretamente no catálogo local (IndexedDB).
+  useEffect(() => {
+    if (!catalogo) return;
+    const link = new URL(window.location.href);
+    const qr = link.searchParams.get("qr");
+    if (!qr) return;
+    // Remove o parâmetro antes de processar para evitar repetição em novos renders.
+    link.searchParams.delete("qr");
+    window.history.replaceState(window.history.state, "", link.pathname + link.search + link.hash);
+    selecionarQR(qr);
+  }, [catalogo, selecionarQR]);
 
   async function baixar() { if (!navigator.onLine) return setMensagem("Sem conexão. Use os dados baixados anteriormente."); setOcupado(true); try { const res = await fetch("/api/mobile/dados", { cache: "no-store", credentials: "same-origin" }); if (!res.ok) throw new Error(res.status === 403 ? "Sessão expirada ou perfil sem permissão. Faça login no site." : `HTTP ${res.status}`); const c = await res.json() as Catalogo; if (pendentes.length && catalogo?.empresaId && c.empresaId !== catalogo.empresaId) throw new Error("Existem inspeções pendentes de outra empresa neste aparelho. Sincronize-as primeiro."); await salvar("catalogo", c); setCatalogo(c); if (!c.locais.some(l => l.id === local)) setLocal(c.locais[0]?.id || ""); setMensagem(`Dados atualizados: ${c.locais.length} locais, ${c.plantas.length} plantas e ${c.extintores.length + c.mangueiras.length} equipamentos.`); } catch (e) { setMensagem(`Não foi possível baixar: ${e instanceof Error ? e.message : "erro"}`); } finally { setOcupado(false); } }
   async function registrar() { if (!escolhido) return setMensagem("Selecione um equipamento na planta ou na lista."); if (resultado === "nao_conforme" && !obs.trim()) return setMensagem("Descreva a não conformidade."); if (!catalogo) return; const item: Pendente = { offlineId: crypto.randomUUID(), categoria: escolhido.categoria, equipamentoId: escolhido.id, conforme: resultado === "conforme", observacao: obs.trim(), registradoEm: new Date().toISOString() }; const novos = [...pendentes, item]; try { await salvar("pendentes", novos); setPendentes(novos); setMensagem("Inspeção salva no aparelho. Envie na sincronização quando tiver internet."); setObs(""); setEquip(""); } catch { setMensagem("Falha ao salvar offline. Verifique o espaço do aparelho; o registro não foi salvo."); } }
