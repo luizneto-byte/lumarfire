@@ -1,12 +1,76 @@
-const VERSION = 'lumar-inspecao-v1';
-self.addEventListener('install', event => { event.waitUntil(caches.open(VERSION).then(cache => cache.add('/painel/mobile')).then(() => self.skipWaiting())); });
-self.addEventListener('activate', event => { event.waitUntil(self.clients.claim()); });
+/* Lumar Fire — cache dedicado ao módulo de inspeção móvel.
+ * Não armazena APIs, credenciais ou respostas de login. */
+const VERSION = 'lumar-inspecao-v2';
+const APP = '/painel/mobile';
+const STATIC = [
+  '/lumar-fire-logo.png',
+  '/inspecao-manifest.webmanifest',
+];
+const appUrl = url => new URL(url, self.location.origin);
+const appPage = response => response.ok && appUrl(response.url).pathname === APP &&
+  (response.headers.get('content-type') || '').includes('text/html');
+
+async function cacheAssetsFromHtml(html) {
+  // O primeiro carregamento acontece antes de o service worker controlar a aba.
+  // Copiamos os bundles citados no HTML inicial para permitir reabertura offline.
+  const matches = [...html.matchAll(/(?:src|href)=["'](\/_next\/static\/[^"']+)["']/g)];
+  const paths = [...new Set(matches.map(m => m[1].replace(/&amp;/g, '&')))];
+  const cache = await caches.open(VERSION);
+  await Promise.allSettled(paths.map(async path => {
+    const req = new Request(path, { credentials: 'same-origin' });
+    const response = await fetch(req);
+    if (response.ok) await cache.put(req, response);
+  }));
+}
+
+async function precache() {
+  const cache = await caches.open(VERSION);
+  await Promise.allSettled(STATIC.map(url => cache.add(url)));
+  try {
+    const response = await fetch(APP, { credentials: 'same-origin', cache: 'no-store' });
+    if (!appPage(response)) return; // nunca salvar /login redirecionado
+    await cache.put(APP, response.clone());
+    await cacheAssetsFromHtml(await response.text());
+  } catch { /* uma visita online posterior poderá preencher o cache */ }
+}
+
+self.addEventListener('install', event => {
+  event.waitUntil(precache().then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k.startsWith('lumar-inspecao-') && k !== VERSION).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
 self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin || new URL(request.url).pathname.startsWith('/api/')) return;
-  if (request.mode === 'navigate' && new URL(request.url).pathname === '/painel/mobile') {
-    event.respondWith(fetch(request).then(response => { if (response.ok) { const copy = response.clone(); caches.open(VERSION).then(cache => cache.put(request, copy)); } return response; }).catch(() => caches.match('/painel/mobile')));
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  if (req.mode === 'navigate' && url.pathname === APP) {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(req);
+        if (appPage(response)) {
+          await (await caches.open(VERSION)).put(APP, response.clone());
+          event.waitUntil(cacheAssetsFromHtml(await response.clone().text()));
+        }
+        return response;
+      } catch {
+        return (await caches.match(APP)) || Response.error();
+      }
+    })());
     return;
   }
-  if (new URL(request.url).pathname.startsWith('/_next/static/')) event.respondWith(caches.match(request).then(hit => hit || fetch(request).then(response => { if (response.ok) { const copy = response.clone(); caches.open(VERSION).then(cache => cache.put(request, copy)); } return response; })));
+  if (url.pathname.startsWith('/_next/static/') || STATIC.includes(url.pathname)) {
+    event.respondWith((async () => {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      const response = await fetch(req);
+      if (response.ok) await (await caches.open(VERSION)).put(req, response.clone());
+      return response;
+    })());
+  }
 });

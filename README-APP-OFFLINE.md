@@ -37,3 +37,10 @@ bubblewrap init --manifest https://SEU-DOMINIO.vercel.app/inspecao-manifest.webm
 bubblewrap build
 ```
 O assistente instala/configura Android SDK e JDK na primeira execução; configure package ID como `br.com.lumarfire.inspecao`, crie chave de assinatura, **guarde o arquivo .jks e suas senhas fora do repositório**. O APK assinado será `app-release-signed.apk`. Configure o arquivo `/.well-known/assetlinks.json` com SHA-256 do certificado e package ID para tela cheia sem barra de navegador. Teste offline em dispositivo físico.
+
+## Ajuste do cache — novembro de 2026
+- Service worker v2: guarda o HTML autenticado do módulo e os bundles estáticos referenciados nele, inclusive na primeira instalação.
+- Nunca guarda conteúdo de login, respostas de API nem redirecionamentos para login.
+- Remove versões antigas do cache ao atualizar.
+- Requer primeira abertura online e download manual dos equipamentos/plantas antes de operar offline.
+- Limitação: o APK presente no ZIP não foi recompilado. Teste o PWA em aparelho Android depois de publicar as alterações; funcionalidades de outras rotas do painel não foram tornadas offline.
